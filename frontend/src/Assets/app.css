@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* .poppins {
+  font-family: "Poppins", sans-serif;
+} */
+
+.scrollbar-custom::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.7);
+  border-radius: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgb(148, 163, 184);
+}
