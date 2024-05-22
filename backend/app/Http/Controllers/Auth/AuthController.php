@@ -32,10 +32,19 @@ class AuthController extends Controller
                 return response()->json($response, 400);
             }
 
+            if (!User::where('email', $request->email)->first()) {
+                $response = [
+                    'success' => false,
+                    'message' => "No account found with this email address."
+                ];
+    
+                return response()->json($response, 400);
+            }
+
             if (!Auth::attempt($request->all())) {
                 $response = [
                     'success' => false,
-                    'message' => "Email atau password yang anda masukkan salah."
+                    'message' => "Wrong password."
                 ];
 
                 return response()->json($response, 400);
@@ -46,11 +55,8 @@ class AuthController extends Controller
 
             $response = [
                 "success" => true,
-                "data" => [
-                    "token" => $token,
-                    "role" => $user->role,
-                ],
-                "message" => "Login Berhasil, Selamat Datang Kembali " . $user->nama
+                "token" => $token,
+                "message" => "Login Successfully, Welcome back " . $user->nama
             ];
 
             return response()->json($response, 200);
@@ -60,7 +66,7 @@ class AuthController extends Controller
                 "message" => "Terjadi Kesalahan"
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response, 400);
         }
     }
 
@@ -69,7 +75,7 @@ class AuthController extends Controller
         try {
             $validated = Validator::make($request->all(), [
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email:rfc', 'unique:users'],
+                'email' => ['required', 'email:rfc'],
                 'password' => ['required', 'string', 'min:6'],
             ]);
 
@@ -82,15 +88,20 @@ class AuthController extends Controller
                 return response()->json($response, 400);
             }
 
-            $code = mt_rand(000000, 999999);
+            if (User::where('email', $request->email)->first()) {
+                $response = [
+                    'success' => false,
+                    'message' => "Email has been registered, please login."
+                ];
+    
+                return response()->json($response, 400);
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'code' => $code
             ]);
-
-            // $user->notify(new EmailVerification($user));
 
             Auth::login($user);
             $token = $user->createToken('authToken')->plainTextToken;
@@ -108,7 +119,7 @@ class AuthController extends Controller
                 "message" => "Terjadi Kesalahan"
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response, 400);
         }
     }
 
@@ -128,7 +139,7 @@ class AuthController extends Controller
                 'message' => "Logout gagal"
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response, 400);
         }
     }
 
@@ -154,7 +165,7 @@ class AuthController extends Controller
                     'message' => "Kode yang anda masukkan salah"
                 ];
 
-                return response()->json($response, 500);
+                return response()->json($response, 400);
             }
 
         } catch (\Throwable $th) {
@@ -163,7 +174,7 @@ class AuthController extends Controller
                 'message' => "Verifikasi email gagal"
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response, 400);
         }
     }
 
@@ -191,7 +202,7 @@ class AuthController extends Controller
                 'message' => "Email verifikasi gagal terkirim"
             ];
 
-            return response()->json($response, 500);
+            return response()->json($response, 400);
         }
     }
 }

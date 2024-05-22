@@ -17,22 +17,62 @@ import {
   HiOutlineBell,
   HiOutlineEnvelope,
   HiArrowRightOnRectangle,
+  HiXMark,
 } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { Alert } from "@material-tailwind/react";
+import { BsCheck2Circle } from "react-icons/bs";
+import { MdError } from "react-icons/md";
 
 export default function Navbar() {
   const [signOutDialog, setSignOutDialog] = useState(false);
+  const [alert, setAlert] = useState({ open: false, type: "", message: "" });
   const route = useNavigate();
 
   const signOut = async () => {
     Cookies.remove("token");
+    setAlert({
+      open: true,
+      type: "success",
+      message: "Logout Successfully",
+    });
+
     route("/login");
   };
 
   return (
     <>
+      {alert.open ? (
+        <Alert
+          color={alert.type == "success" ? "green" : "red"}
+          variant="gradient"
+          className="fixed top-0 right-0 left-0 py-5"
+          animate={{
+            mount: { y: 0, opacity: 1 },
+            unmount: { y: -30, opacity: 0 },
+          }}
+          icon={
+            alert.type == "success" ? (
+              <BsCheck2Circle className="w-6 h-6" />
+            ) : (
+              <MdError className="w-6 h-6" />
+            )
+          }
+          open={alert.open}
+          action={
+            <HiXMark
+              className="w-6 h-6 absolute right-0 mr-5 cursor-pointer"
+              onClick={() => setAlert({ open: false })}
+            />
+          }
+        >
+          {alert.message}
+        </Alert>
+      ) : (
+        <></>
+      )}
       <div className="w-[calc(100vw-14rem)] left-56 fixed h-16 px-5 flex justify-between items-center bg-white shadow-sm shadow-slate-300 z-30">
         <div className="w-full flex justify-between gap-1 items-center">
           <div className="flex items-center w-full">
@@ -44,50 +84,6 @@ export default function Navbar() {
             />
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex gap-4 mr-4">
-              <Menu>
-                <MenuHandler>
-                  <IconButton
-                    color="blue"
-                    variant="text"
-                    className="rounded-full bg-slate-100 border border-slate-300"
-                  >
-                    <HiOutlineBell className="w-5 h-5 text-slate-500" />
-                  </IconButton>
-                </MenuHandler>
-                <MenuList className="px-0 divide-y divide-slate-200">
-                  <MenuItem className="py-2 rounded-none" disabled>
-                    Notification
-                  </MenuItem>
-                  <MenuItem className="rounded-none">Check Security</MenuItem>
-                  <MenuItem className="rounded-none">Check Security</MenuItem>
-                </MenuList>
-              </Menu>
-              <Menu>
-                <MenuHandler>
-                  <IconButton
-                    color="blue"
-                    variant="text"
-                    className="rounded-full bg-slate-100 border border-slate-300"
-                  >
-                    <HiOutlineEnvelope className="w-5 h-5 text-slate-500" />
-                  </IconButton>
-                </MenuHandler>
-                <MenuList className="px-0 divide-y divide-slate-200">
-                  <MenuItem className="py-2 rounded-none" disabled>
-                    Message
-                  </MenuItem>
-                  <MenuItem className="rounded-none">Check Security</MenuItem>
-                  <MenuItem className="rounded-none">Check Security</MenuItem>
-                </MenuList>
-              </Menu>
-            </div>
-            <div className="flex flex-col items-end whitespace-nowrap">
-              {/* <h1 className="text-sm text-slate-800">{user && user.username}</h1> */}
-              {/* <small className="text-[11px] text-slate-500">
-              {user && user.role}
-            </small> */}
-            </div>
             <Menu>
               <MenuHandler>
                 <div className="w-10 h-10 rounded-full overflow-hidden flex shrink-0 justify-center items-center">

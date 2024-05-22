@@ -10,13 +10,13 @@ export default function InputField({
   onChange = () => {},
   placeholder = "",
   autoFocus = false,
-  error,
+  error = {},
 }) {
   const [visiblePwd, setVisiblePwd] = useState(false);
 
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={label} className="text-sm font-semibold">
+      <label htmlFor={name} className="text-sm font-semibold">
         {label}
       </label>
       <div className="relative">
@@ -25,15 +25,19 @@ export default function InputField({
         })}
         <input
           type={visiblePwd ? "text" : type}
-          id={label}
+          id={name}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
           autoFocus={autoFocus}
           autoComplete="off"
-          className="w-full pl-10 pr-4 py-2 text-slate-600 rounded-lg focus:outline-none border border-slate-300 focus:ring-2 focus:ring-blue-500 transition-all"
+          className={`w-full pl-10 pr-4 py-2 text-slate-600 rounded-lg focus:outline-none border ${
+            error[name] ? "border-red-500" : "border-slate-300"
+          } focus:ring-2 ${
+            error[name] ? "focus:ring-red-500" : "focus:ring-blue-500"
+          } transition-all`}
         />
-        {type == "password" &&
+        {type === "password" &&
           (visiblePwd ? (
             <HiEye
               className="absolute w-5 h-5 top-3 right-3 text-[#595959] cursor-pointer"
@@ -46,15 +50,7 @@ export default function InputField({
             />
           ))}
       </div>
-      {error.map(
-        (d, i) =>
-          d.message &&
-          d.type == name && (
-            <p key={i} className="text-red-500 text-sm">
-              {d.message}
-            </p>
-          )
-      )}
+      {error[name] && <p className="text-red-500 text-sm">{error[name]}</p>}
     </div>
   );
 }
